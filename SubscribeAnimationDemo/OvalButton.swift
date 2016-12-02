@@ -9,78 +9,77 @@
 import UIKit
 
 class OvalButton: UIView {
-
-    /*
-    // Only override drawRect: if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func drawRect(rect: CGRect) {
-        // Drawing code
-    }
-    */
-    internal var textColor: UIColor = UIColor.blackColor()
-    internal var fillColor: UIColor = UIColor.whiteColor()
-    internal var strokeColor: UIColor = RedColor
+  
+  /*
+   // Only override drawRect: if you perform custom drawing.
+   // An empty implementation adversely affects performance during animation.
+   override func drawRect(rect: CGRect) {
+   // Drawing code
+   }
+   */
+  internal var textColor: UIColor = UIColor.black
+  internal var fillColor: UIColor = UIColor.white
+  internal var strokeColor: UIColor = RedColor
+  
+  var buttonActivated = false
+  
+  var text: String = "Subscribe"
+  var clickClosure: () -> () = {}
+  
+  
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    self.backgroundColor = UIColor.clear
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+  }
+  
+  override func draw(_ rect: CGRect) {
+    let context = UIGraphicsGetCurrentContext()
+    context?.addRect(rect)
+    UIColor.clear.set()
+    context?.fillPath()
     
-    var buttonActivated = false
+    let roundPath = UIBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), cornerRadius: rect.height / 2)
+    fillColor.setFill()
+    roundPath.fill()
+    strokeColor.setStroke()
+    roundPath.lineWidth = 1.5
+    roundPath.stroke()
     
-    var text: String = "Subscribe"
-    var clickClosure: () -> () = {}
+    let paragraphStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+    paragraphStyle.alignment = .center
+    let attr = [NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: UIFont.boldSystemFont(ofSize: 16), NSForegroundColorAttributeName: textColor]
+    let textSize = text.size(attributes: attr)
+    
+    let r = CGRect(x: rect.origin.x, y: rect.origin.y + (rect.size.height - textSize.height) / 2, width: rect.size.width, height: textSize.height)
+    text.draw(in: r, withAttributes: attr)
     
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.clearColor()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override func drawRect(rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()
-        CGContextAddRect(context, rect)
-        UIColor.clearColor().set()
-        CGContextFillPath(context)
-        
-        let roundPath = UIBezierPath(roundedRect: CGRectInset(rect, 1, 1), cornerRadius: rect.height / 2)
-        fillColor.setFill()
-        roundPath.fill()
-        strokeColor.setStroke()
-        roundPath.lineWidth = 1.5
-        roundPath.stroke()
-        
-        let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
-        paragraphStyle.alignment = .Center
-        let attr = [NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: UIFont.boldSystemFontOfSize(16), NSForegroundColorAttributeName: textColor]
-        let textSize = text.sizeWithAttributes(attr)
-        
-        let r = CGRectMake(rect.origin.x, rect.origin.y + (rect.size.height - textSize.height) / 2, rect.size.width, textSize.height)
-        text.drawInRect(r, withAttributes: attr)
-        
-        
-    }
-    
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        clickClosure()
-    }
-    
-    func animateAfterTapped() {
-        if buttonActivated == false {
-            let buttonOpacityAnimation = CABasicAnimation(keyPath: "opacity")
-            buttonOpacityAnimation.fromValue = 1
-            buttonOpacityAnimation.toValue = 0
-            buttonOpacityAnimation.duration = 0.3
-            buttonOpacityAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-            buttonOpacityAnimation.fillMode = kCAFillModeForwards
-            buttonOpacityAnimation.removedOnCompletion = false
-            buttonOpacityAnimation.delegate = self
-            
-            self.layer.addAnimation(buttonOpacityAnimation, forKey: "buttonVanish")
-            buttonActivated = true
-        }
-        
+  }
+  
+  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    clickClosure()
+  }
+  
+  func animateAfterTapped() {
+    if buttonActivated == false {
+      let buttonOpacityAnimation = CABasicAnimation(keyPath: "opacity")
+      buttonOpacityAnimation.fromValue = 1
+      buttonOpacityAnimation.toValue = 0
+      buttonOpacityAnimation.duration = 0.3
+      buttonOpacityAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+      buttonOpacityAnimation.fillMode = kCAFillModeForwards
+      buttonOpacityAnimation.isRemovedOnCompletion = false
+      
+      self.layer.add(buttonOpacityAnimation, forKey: "buttonVanish")
+      buttonActivated = true
     }
     
-    
-
+  }
+  
+  
+  
 }
